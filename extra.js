@@ -80,5 +80,7 @@ function renderExtra(d, s, ore, porto) {
   renderAllerte(ore);
   renderPartire(ore, d.daily, s);
   renderMaree(ore);
+  renderGrafici(ore, s);
+  renderPianifica(ore, d.daily, s);
   disegnaRiparo(ore, porto);
 }

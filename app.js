@@ -77,6 +77,8 @@ function render() {
          a.onda == null ? "n.d." : a.onda.toFixed(1) + " m", a.onda == null ? null : classifica(a.onda, s.onda)) +
     tile(nomeTempo(a.codice) + (a.pioggia != null ? " · pioggia " + a.pioggia + "%" : ""),
          ic + " " + (a.temp == null ? "–" : Math.round(a.temp) + "°C"), null) +
+    tile("Temperatura del mare", a.tmare == null ? "n.d." : a.tmare.toFixed(1) + "°C", null) +
+    tile(beaufort(a.vento).nome + " (Beaufort)", "Forza " + beaufort(a.vento).f, null) +
     "</div>";
 
   el("ore").innerHTML = "<h2>Prossime 24 ore</h2><div class=\"ore\">" +
@@ -202,7 +204,8 @@ function init() {
     o.textContent = p.n;
     sel.appendChild(o);
   });
-  const salvato = leggi("porto", "Molfetta");
+  const urlP = new URLSearchParams(location.search).get("porto");
+  const salvato = urlP && PORTI.some(p => p.n === urlP) ? urlP : leggi("porto", "Molfetta");
   stato.porto = PORTI.find(p => p.n === salvato) || PORTI[0];
   sel.value = stato.porto.n;
   const b = leggi("barca", "vela");
@@ -210,6 +213,7 @@ function init() {
   sel.addEventListener("change", () => {
     stato.porto = PORTI.find(p => p.n === sel.value);
     scrivi("porto", sel.value);
+    history.replaceState(null, "", "?porto=" + encodeURIComponent(sel.value));
     aggiorna();
   });
   disegnaBarche();
