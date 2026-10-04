@@ -1,0 +1,36 @@
+:root{--fondo1:#0b1b2b;--fondo2:#12324d;--testo:#f2f6fa;--tenue:#9fb3c6;--card:rgba(255,255,255,.07)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--testo);background:linear-gradient(var(--fondo1),var(--fondo2)) fixed;font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-direction:column;gap:10px}
+.sopra{font-size:12px;letter-spacing:.3em;color:var(--tenue)}
+select{font:inherit;font-size:26px;font-weight:700;color:var(--testo);background:transparent;border:0;padding:0;max-width:100%}
+select option{color:#000}
+.barche{display:flex;gap:8px}
+.barche button{font:inherit;font-size:14px;color:var(--testo);background:var(--card);border:1px solid transparent;border-radius:999px;padding:6px 14px}
+.barche button.attiva{border-color:#5ac8fa;background:rgba(90,200,250,.18)}
+.card{background:var(--card);border-radius:16px;padding:16px}
+h2{margin:0 0 10px;font-size:15px;color:var(--tenue);font-weight:600}
+.semaforo{display:flex;align-items:center;gap:16px}
+.pallino{width:64px;height:64px;border-radius:50%;flex:none;box-shadow:0 0 24px currentColor}
+.titolo{font-size:22px;font-weight:700}
+.sub{color:var(--tenue);font-size:14px}
+.griglia{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 12px;border-left:4px solid transparent}
+.tile .val{font-size:22px;font-weight:700}
+.tile .et{font-size:12px;color:var(--tenue)}
+.ore{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.ora{flex:none;width:58px;text-align:center;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 2px 6px;border-bottom:4px solid transparent;font-size:13px}
+.ora .h{color:var(--tenue);font-size:12px}
+.ora .ic{font-size:20px}
+.luce{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.luce .val{font-size:17px;font-weight:700}
+.luce .et{font-size:12px;color:var(--tenue)}
+.riga{display:grid;grid-template-columns:1fr 1.2fr 64px;gap:8px;align-items:center;margin:8px 0;font-size:14px}
+.riga span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%}
+summary{cursor:pointer;font-weight:600}
+.pulsante{font:inherit;font-size:14px;color:var(--testo);background:var(--card);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:6px 12px}
+.nota{color:var(--tenue);font-size:12px;margin:4px 2px}
+.errore{color:#ff9f0a}
