@@ -53,3 +53,15 @@ summary{cursor:pointer;font-weight:600}
 .pian{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .pian label{font-size:13px;color:var(--tenue);display:flex;flex-direction:column;gap:4px}
 .pian select{font:inherit;font-size:16px;font-weight:600;color:var(--testo);background:rgba(255,255,255,.1);border:0;border-radius:8px;padding:6px 8px}
+#mappaBox{height:360px;border-radius:12px;overflow:hidden;margin:8px 0;background:#0b1b2b}
+.mappaCtl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px}
+.mappaCtl label{display:flex;align-items:center;gap:4px}
+.mappaCtl select{font:inherit;font-size:14px;color:var(--testo);background:rgba(255,255,255,.1);border:0;border-radius:8px;padding:5px 8px}
+.mappaOra{display:flex;align-items:center;gap:10px;font-size:14px}
+.mappaOra input{flex:1}
+.mappaOra span{min-width:88px}
+.barba,.portoIcona{background:none!important;border:0!important}
+.portoIcona{font-size:22px;text-align:center;line-height:28px}
+.legenda{height:10px;border-radius:5px;margin:6px 0 2px}
+.legTxt{display:flex;justify-content:space-between;font-size:12px;color:var(--tenue)}
+.leaflet-container{font:inherit}
