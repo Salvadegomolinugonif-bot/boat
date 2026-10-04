@@ -34,3 +34,15 @@ summary{cursor:pointer;font-weight:600}
 .pulsante{font:inherit;font-size:14px;color:var(--testo);background:var(--card);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:6px 12px}
 .nota{color:var(--tenue);font-size:12px;margin:4px 2px}
 .errore{color:#ff9f0a}
+.allerta{border-left:4px solid transparent;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 12px;margin:6px 0;font-size:14px}
+.giorno{display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.08);font-size:15px}
+.giorno:last-of-type{border-bottom:0}
+.giorno.migliore{background:rgba(52,199,89,.12);border-radius:8px;font-weight:600}
+.mareaora{margin-bottom:6px}
+.mareaora .val{font-size:24px;font-weight:700}
+.curva{width:100%;height:auto;display:block;margin:6px 0}
+.riga-m{display:flex;justify-content:space-between;font-size:14px;padding:3px 0}
+.settori{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.sett{font:inherit;font-size:14px;color:var(--testo);background:var(--card);border:1px solid rgba(255,255,255,.15);border-radius:10px;min-width:42px;padding:6px 8px}
+.sett.attiva{background:rgba(255,204,0,.28);border-color:#ffcc00}
+.ora.espo{background:rgba(255,204,0,.3)}

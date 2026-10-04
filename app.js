@@ -98,6 +98,7 @@ function render() {
     `<div><div class="val">${tram.slice(11, 16)}</div><div class="et">Tramonto</div></div>` +
     `<div><div class="val">${Math.floor(min / 60)} h ${min % 60} min</div><div class="et">Ore di luce</div></div>` +
     `<div><div class="val">${lu.emoji} ${lu.perc}%</div><div class="et">${lu.nome}</div></div></div>`;
+  renderExtra(d, s, ore, stato.porto);
 }
 
 async function aggiorna() {

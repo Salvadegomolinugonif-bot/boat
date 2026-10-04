@@ -87,18 +87,19 @@ async function json(url) {
 }
 
 async function carica(porto) {
-  const q = "latitude=" + porto.lat + "&longitude=" + porto.lon + "&timezone=auto&forecast_days=3";
+  const q = "latitude=" + porto.lat + "&longitude=" + porto.lon + "&timezone=auto&forecast_days=7";
   const meteo = json("https://api.open-meteo.com/v1/forecast?" + q +
-    "&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m,weather_code,precipitation_probability" +
+    "&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m,weather_code,precipitation_probability,pressure_msl,visibility" +
     "&daily=sunrise,sunset&wind_speed_unit=kn");
   const mare = json("https://marine-api.open-meteo.com/v1/marine?" + q +
-    "&hourly=wave_height,wave_period").catch(() => null);
+    "&hourly=wave_height,wave_period,sea_level_height_msl").catch(() => null);
   const [m, o] = await Promise.all([meteo, mare]);
 
   const onde = {};
   if (o && o.hourly && o.hourly.time) {
     o.hourly.time.forEach((t, i) => {
-      onde[t] = { h: o.hourly.wave_height[i], p: o.hourly.wave_period ? o.hourly.wave_period[i] : null };
+      onde[t] = { h: o.hourly.wave_height[i], p: o.hourly.wave_period ? o.hourly.wave_period[i] : null,
+                  lm: o.hourly.sea_level_height_msl ? o.hourly.sea_level_height_msl[i] : null };
     });
   }
   const adesso = new Date(Date.now() + m.utc_offset_seconds * 1000).toISOString().slice(0, 13) + ":00";
@@ -116,7 +117,10 @@ async function carica(porto) {
       codice: h.weather_code[i],
       pioggia: h.precipitation_probability[i],
       onda: w && w.h != null ? w.h : null,
-      periodo: w && w.p != null ? w.p : null
+      periodo: w && w.p != null ? w.p : null,
+      pressione: h.pressure_msl ? h.pressure_msl[i] : null,
+      vis: h.visibility ? h.visibility[i] : null,
+      mare: w && w.lm != null ? w.lm : null
     });
   }
   return { ore, daily: m.daily };
