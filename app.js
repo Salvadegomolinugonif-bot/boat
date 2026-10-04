@@ -101,20 +101,96 @@ function render() {
   renderExtra(d, s, ore, stato.porto);
 }
 
+function mostraOffline(msg) {
+  const b = el("offline");
+  b.hidden = !msg;
+  b.textContent = msg || "";
+}
+
+function dataOra(ms) {
+  return new Date(ms).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function oraCorta(ms) {
+  return new Date(ms).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+}
+
+function datiDaCache(p) {
+  const c = leggi("ultimo_" + p.n, null);
+  if (!c || !c.ore || !c.salvato) return null;
+  const adesso = new Date(Date.now() + (c.utc || 0) * 1000).toISOString().slice(0, 13) + ":00";
+  const ore = c.ore.filter(o => o.t >= adesso);
+  if (!ore.length) return null;
+  return Object.assign({}, c, { ore: ore, porto: p.n, aggiornato: oraCorta(c.salvato) });
+}
+
+function messaggioCache(c) {
+  const h = Math.floor((Date.now() - c.salvato) / 3600000);
+  const eta = h < 1 ? "meno di 1 h fa" : h + " h fa";
+  let m = "Previsione salvata il " + dataOra(c.salvato) + " (" + eta + "), non aggiornata.";
+  if (h >= 12) m += " Il semaforo potrebbe non essere affidabile.";
+  return m;
+}
+
+function potaCache() {
+  try {
+    const k = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const n = localStorage.key(i);
+      if (n && n.startsWith("ultimo_")) {
+        const v = JSON.parse(localStorage.getItem(n));
+        k.push([n, v && v.salvato ? v.salvato : 0]);
+      }
+    }
+    k.sort((a, b) => b[1] - a[1]);
+    k.slice(8).forEach(x => localStorage.removeItem(x[0]));
+  } catch (e) {}
+}
+
+function svuota() {
+  ["adesso", "ore", "partire", "maree", "riparo", "luce"].forEach(id => { el(id).innerHTML = ""; });
+  el("allerte").hidden = true;
+  el("allerte").innerHTML = "";
+}
+
 async function aggiorna() {
   const p = stato.porto;
+  if (!stato.dati || stato.dati.porto !== p.n) {
+    stato.dati = null;
+    svuota();
+    el("semaforo").textContent = "Carico...";
+    const c = datiDaCache(p);
+    if (c) {
+      stato.dati = c;
+      mostraOffline("Aggiorno... " + messaggioCache(c));
+      render();
+    }
+  }
   try {
     const d = await carica(p);
     if (p !== stato.porto) return;
-    d.aggiornato = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+    d.porto = p.n;
+    d.salvato = Date.now();
+    d.aggiornato = oraCorta(d.salvato);
+    scrivi("ultimo_" + p.n, d);
+    potaCache();
     stato.dati = d;
+    mostraOffline("");
     render();
   } catch (e) {
-    const n = document.createElement("div");
-    n.className = "errore";
-    n.textContent = "Dati non disponibili: " + (e && e.message ? e.message : e);
-    el("semaforo").innerHTML = "";
-    el("semaforo").appendChild(n);
+    if (p !== stato.porto) return;
+    const c = datiDaCache(p);
+    if (c) {
+      stato.dati = c;
+      mostraOffline("Senza connessione. " + messaggioCache(c));
+      render();
+    } else {
+      const n = document.createElement("div");
+      n.className = "errore";
+      n.textContent = "Dati non disponibili: " + (e && e.message ? e.message : e);
+      el("semaforo").innerHTML = "";
+      el("semaforo").appendChild(n);
+    }
   }
 }
 
@@ -140,6 +216,10 @@ function init() {
   disegnaSoglie();
   aggiorna();
   setInterval(aggiorna, 30 * 60 * 1000);
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
 
 init();

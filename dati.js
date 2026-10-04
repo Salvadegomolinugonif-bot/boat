@@ -80,10 +80,16 @@ function luna(d) {
 }
 
 async function json(url) {
-  const r = await fetch(url);
-  const d = await r.json();
-  if (!r.ok || d.error) throw new Error(d.reason || ("Errore " + r.status));
-  return d;
+  const ctl = new AbortController();
+  const to = setTimeout(() => ctl.abort(), 15000);
+  try {
+    const r = await fetch(url, { signal: ctl.signal });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.reason || ("Errore " + r.status));
+    return d;
+  } finally {
+    clearTimeout(to);
+  }
 }
 
 async function carica(porto) {
@@ -123,5 +129,5 @@ async function carica(porto) {
       mare: w && w.lm != null ? w.lm : null
     });
   }
-  return { ore, daily: m.daily };
+  return { ore, daily: m.daily, utc: m.utc_offset_seconds };
 }
