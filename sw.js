@@ -1,5 +1,5 @@
 "use strict";
-const NOME = "boat-v6";
+const NOME = "boat-v7";
 const FILE = ["./", "index.html", "style.css", "porti.js", "dati.js", "extra.js", "extra2.js",
               "extra3.js", "extra4.js", "mappa_dati.js", "mappa.js", "vendor/leaflet.js", "vendor/leaflet.css",
               "app.js", "manifest.json", "icona-180.png", "icona-192.png", "icona-512.png"];
@@ -17,7 +17,7 @@ self.addEventListener("activate", e => {
   );
 });
 
-// Con rete: file sempre freschi. Senza rete: copia salvata.
+// Con rete: file sempre freschi. Senza rete: copia salvata (ignorando ?v=).
 self.addEventListener("fetch", e => {
   const r = e.request;
   if (r.method !== "GET" || new URL(r.url).origin !== self.location.origin) return;
@@ -28,6 +28,10 @@ self.addEventListener("fetch", e => {
         caches.open(NOME).then(c => c.put(r, copia));
       }
       return res;
-    }).catch(() => caches.match(r, { ignoreSearch: true }).then(x => x || caches.match("index.html")))
+    }).catch(() =>
+      caches.match(r, { ignoreSearch: true }).then(m =>
+        m || (r.mode === "navigate" ? caches.match("index.html") : null) || Response.error()
+      )
+    )
   );
 });
