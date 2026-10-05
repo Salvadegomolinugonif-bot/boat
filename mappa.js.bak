@@ -101,7 +101,6 @@ async function apriMappa(porto) {
   box.innerHTML = '<h2>Mappa</h2><div class="mappaCtl">' +
     '<select id="mLiv"><option value="vento">Vento</option><option value="raffiche">Raffiche</option>' +
     '<option value="aria">Aria</option><option value="mare">Mare</option><option value="nessuno">Nessun colore</option></select>' +
-    '<select id="mBase"><option value="mappa">Mappa</option><option value="sat">Satellite</option></select>' +
     '<label><input type="checkbox" id="mSim" checked> Simboli nautici</label>' +
     '<label><input type="checkbox" id="mFon"> Fondali</label>' +
     '<label><input type="checkbox" id="mBar" checked> Barbette</label></div>' +
@@ -112,8 +111,7 @@ async function apriMappa(porto) {
     '<p class="nota">Mappa © OpenStreetMap contributors. Simboli OpenSeaMap (dati volontari) e fondali EMODnet (dati scientifici di insieme, circa 125 m, curve da 50 m): ausili, non carte nautiche ufficiali, non adatti a navigare sotto costa. Vento, aria e mare sono un modello su 35 punti, interpolato: valgono anche sulla terraferma. Barbette: l\'asta punta verso la provenienza del vento; tacca lunga 10 nodi, corta 5, triangolo 50.</p>';
 
   MAPPA = L.map("mappaBox").setView([porto.lat, porto.lon], 9);
-  const baseOsm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(MAPPA);
-  const baseSat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 18, attribution: "Immagini: Esri, Maxar, Earthstar Geographics" });
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(MAPPA);
   MAPPA.createPane("simboli");
   MAPPA.getPane("simboli").style.zIndex = 450;
   MAPPA.getPane("simboli").style.pointerEvents = "none";
@@ -123,10 +121,6 @@ async function apriMappa(porto) {
 
   const q = id => document.getElementById(id);
   q("mLiv").addEventListener("change", e => { MS.liv = e.target.value; aggiornaLegenda(); ridisegnaMeteo(); });
-  q("mBase").addEventListener("change", e => {
-    if (e.target.value === "sat") { MAPPA.removeLayer(baseOsm); baseSat.addTo(MAPPA); baseSat.bringToBack(); }
-    else { MAPPA.removeLayer(baseSat); baseOsm.addTo(MAPPA); baseOsm.bringToBack(); }
-  });
   q("mSim").addEventListener("change", e => { MS.simboli = e.target.checked; aggiornaStrati(); });
   q("mFon").addEventListener("change", e => { MS.fondali = e.target.checked; aggiornaStrati(); });
   q("mBar").addEventListener("change", e => { MS.barbette = e.target.checked; ridisegnaMeteo(); });
