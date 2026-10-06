@@ -223,7 +223,25 @@ function init() {
 }
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  const giaControllato = !!navigator.serviceWorker.controller;
+  let avvisato = false;
+  const mostraAvviso = () => {
+    if (avvisato) return;
+    avvisato = true;
+    const b = document.createElement("div");
+    b.className = "avvisoVersione";
+    b.innerHTML = '<span>Nuova versione disponibile</span><button class="pulsante" id="aggiornaVers">Aggiorna</button>';
+    document.body.appendChild(b);
+    document.getElementById("aggiornaVers").addEventListener("click", () => location.reload());
+  };
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (giaControllato) mostraAvviso(); });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") reg.update().catch(() => {});
+      });
+    }).catch(() => {});
+  });
 }
 
 init();
