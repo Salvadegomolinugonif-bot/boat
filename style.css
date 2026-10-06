@@ -65,4 +65,3 @@ summary{cursor:pointer;font-weight:600}
 .legenda{height:10px;border-radius:5px;margin:6px 0 2px}
 .legTxt{display:flex;justify-content:space-between;font-size:12px;color:var(--tenue)}
 .leaflet-container{font:inherit}
-.avvisoVersione{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#12324d;border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:10px 14px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
