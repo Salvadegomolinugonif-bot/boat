@@ -66,3 +66,26 @@ summary{cursor:pointer;font-weight:600}
 .legTxt{display:flex;justify-content:space-between;font-size:12px;color:var(--tenue)}
 .leaflet-container{font:inherit}
 .avvisoVersione{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#12324d;border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:10px 14px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+
+.dz-tot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 12px}
+.dz-tot div{background:rgba(255,255,255,.06);border-radius:10px;padding:8px 10px}
+.dz-tot small{display:block;color:var(--tenue);font-size:12px}
+.dz-tot b{font-size:20px;font-weight:600}
+.dz-barra{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.dz-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;padding:12px;background:rgba(255,255,255,.05);border-radius:12px}
+.dz-form[hidden]{display:none}
+.dz-largo{grid-column:1/-1}
+.dz-campo{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--tenue);min-width:0}
+.dz-form input,.dz-form select,.dz-form textarea{font:inherit;font-size:16px;font-weight:400;color:var(--testo);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px;width:100%;box-sizing:border-box}
+.dz-cond{grid-column:1/-1;background:rgba(80,160,255,.14);border-radius:10px;padding:10px}
+.dz-condTit{font-size:12px;color:var(--tenue);margin-bottom:8px}
+.dz-condGriglia{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:8px}
+.dz-stato{font-size:13px;color:var(--tenue);margin-bottom:8px}
+.dz-voce{border-top:1px solid rgba(255,255,255,.12);padding:10px 0}
+.dz-riga{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dz-pill{font-size:11px;padding:2px 8px;border-radius:8px}
+.dz-l0{background:rgba(80,200,120,.2);color:#8fe3ae}
+.dz-l1{background:rgba(255,200,60,.2);color:#ffd86b}
+.dz-l2{background:rgba(255,100,90,.2);color:#ff9a93}
+.dz-note{font-size:14px;margin-top:4px}
+.dz-azioni{display:flex;gap:8px;margin-top:6px}
