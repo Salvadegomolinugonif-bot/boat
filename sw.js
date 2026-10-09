@@ -1,5 +1,5 @@
 "use strict";
-const NOME = "boat-v15";
+const NOME = "boat-v16";
 const FILE = ["./", "index.html", "style.css", "porti.js", "dati.js", "extra.js", "extra2.js",
               "extra3.js", "extra4.js", "diario.js", "mappa_dati.js", "mappa.js", "vendor/leaflet.js", "vendor/leaflet.css",
               "app.js", "manifest.json", "icona-180.png", "icona-192.png", "icona-512.png"];

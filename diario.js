@@ -207,14 +207,17 @@
   }
 
   function salvaVoce() {
+    try { salvaVoceInterno(); } catch (e) { alert("Errore nel salvataggio: " + (e && e.message ? e.message : e)); }
+  }
+  function salvaVoceInterno() {
     const f = id => el(id).value.trim();
     ["dzPart", "dzRient"].forEach(id => { el(id).value = norma(el(id).value); });
-    if (!dataDaTesto(f("dzData"))) { el("dzStato").textContent = "Scrivi la data, per esempio 5/10/2026."; return; }
+    if (!dataDaTesto(f("dzData"))) { alert("Scrivi la data, per esempio 5/10/2026."); return; }
     if ((!f("dzPart") || !f("dzRient")) && !confirm("Senza partenza e rientro le ore non vengono contate. Salvare lo stesso?")) return;
     let rt = f("dzRotta");
     if (rt !== "") {
       const n = Number(rt.replace(",", "."));
-      if (!isFinite(n) || n < 0 || n > 360) { el("dzStato").textContent = "La rotta va da 0 a 360 gradi."; return; }
+      if (!isFinite(n) || n < 0 || n > 360) { alert("La rotta va da 0 a 360 gradi."); return; }
       rt = String(Math.round(n) % 360);
     }
     const cond = { vento: f("dzVento"), dir: f("dzDir"), raffica: f("dzRaff"), onda: f("dzOnda"), mare: f("dzMare") };
