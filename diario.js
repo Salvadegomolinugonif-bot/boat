@@ -41,6 +41,24 @@
     if (h == null || h > 23 || mi > 59) return "";
     return String(h).padStart(2, "0") + ":" + String(mi).padStart(2, "0");
   }
+  function dataDaTesto(t) {
+    const s = String(t || "").trim();
+    let g, me, a;
+    let m = /^(\d{1,2})\s*[\/.\-\s]\s*(\d{1,2})(?:\s*[\/.\-\s]\s*(\d{2,4}))?$/.exec(s);
+    if (m) { g = +m[1]; me = +m[2]; a = m[3]; }
+    else if ((m = /^(\d{2})(\d{2})(\d{4})$/.exec(s))) { g = +m[1]; me = +m[2]; a = m[3]; }
+    else return "";
+    let y = a == null ? new Date().getFullYear() : +a;
+    if (a != null && a.length <= 2) y = 2000 + y;
+    if (y < 1990 || y > 2100) return "";
+    const d = new Date(y, me - 1, g);
+    if (d.getFullYear() !== y || d.getMonth() !== me - 1 || d.getDate() !== g) return "";
+    return y + "-" + String(me).padStart(2, "0") + "-" + String(g).padStart(2, "0");
+  }
+  function itDaIso(iso) {
+    const p = String(iso || "").split("-");
+    return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : "";
+  }
   function durataMin(v) {
     const a = minuti(v.partenza), b = minuti(v.rientro);
     if (a == null || b == null) return 0;
@@ -82,10 +100,12 @@
       </div>
       <p class="sub" id="dzUltimo"></p>
       <div class="dz-form" id="dzForm" hidden>
-        <label class="dz-campo">Data<input type="date" id="dzData"></label>
+        <label class="dz-campo">Data<input type="text" inputmode="numeric" placeholder="05/10/2026" maxlength="10" id="dzData"></label>
         <label class="dz-campo">Porto<select id="dzPorto"></select></label>
         <label class="dz-campo">Partenza<input type="text" inputmode="numeric" placeholder="09:30" maxlength="5" id="dzPart"></label>
         <label class="dz-campo">Rientro<input type="text" inputmode="numeric" placeholder="09:30" maxlength="5" id="dzRient"></label>
+        <label class="dz-campo">Da<input type="text" id="dzDa" placeholder="Molfetta"></label>
+        <label class="dz-campo">A<input type="text" id="dzA" placeholder="Bari"></label>
         <div class="dz-cond">
           <div class="dz-condTit">Condizioni del giorno, modificabili</div>
           <div class="dz-condGriglia">
@@ -100,6 +120,7 @@
         </div>
         <label class="dz-campo dz-largo">Equipaggio<input type="text" id="dzEquip"></label>
         <label class="dz-campo">Miglia<input type="number" step="0.1" inputmode="decimal" id="dzMiglia"></label>
+        <label class="dz-campo">Rotta (gradi)<input type="number" step="1" min="0" max="360" inputmode="numeric" id="dzRotta" placeholder="045"></label>
         <label class="dz-campo dz-largo">Note<textarea rows="3" id="dzNote"></textarea></label>
         <div class="dz-barra dz-largo">
           <button class="pulsante" type="button" id="dzSalva">Salva uscita</button>
@@ -117,7 +138,7 @@
     if (![...sel.options].some(o => o.value === porto)) sel.add(new Option(porto, porto));
     sel.value = porto;
     const c = (v && v.cond) || {};
-    el("dzData").value = v ? v.data : oggiIso();
+    el("dzData").value = itDaIso(v ? v.data : oggiIso());
     el("dzPart").value = (v && v.partenza) || "";
     el("dzRient").value = (v && v.rientro) || "";
     el("dzVento").value = c.vento == null ? "" : c.vento;
@@ -127,6 +148,9 @@
     el("dzMare").value = c.mare == null ? "" : c.mare;
     el("dzEquip").value = (v && v.equipaggio) || "";
     el("dzMiglia").value = (v && v.miglia) || "";
+    el("dzDa").value = (v && v.da) || "";
+    el("dzA").value = (v && v.a) || "";
+    el("dzRotta").value = (v && v.rotta) || "";
     el("dzNote").value = (v && v.note) || "";
     el("dzStato").textContent = "";
     el("dzForm").hidden = false;
@@ -137,7 +161,7 @@
   async function caricaCondizioni() {
     const tok = ++tokCond;
     const st = el("dzStato");
-    const data = el("dzData").value, porto = el("dzPorto").value;
+    const data = dataDaTesto(el("dzData").value), porto = el("dzPorto").value;
     const a = minuti(el("dzPart").value), b = minuti(el("dzRient").value);
     const p = (typeof PORTI !== "undefined" ? PORTI : []).find(x => x.n === porto);
     if (!data || !p) { st.textContent = "Scegli data e porto."; return; }
@@ -185,13 +209,19 @@
   function salvaVoce() {
     const f = id => el(id).value.trim();
     ["dzPart", "dzRient"].forEach(id => { el(id).value = norma(el(id).value); });
-    if (!f("dzData")) { el("dzStato").textContent = "Scegli la data."; return; }
+    if (!dataDaTesto(f("dzData"))) { el("dzStato").textContent = "Scrivi la data, per esempio 5/10/2026."; return; }
     if ((!f("dzPart") || !f("dzRient")) && !confirm("Senza partenza e rientro le ore non vengono contate. Salvare lo stesso?")) return;
+    let rt = f("dzRotta");
+    if (rt !== "") {
+      const n = Number(rt.replace(",", "."));
+      if (!isFinite(n) || n < 0 || n > 360) { el("dzStato").textContent = "La rotta va da 0 a 360 gradi."; return; }
+      rt = String(Math.round(n) % 360);
+    }
     const cond = { vento: f("dzVento"), dir: f("dzDir"), raffica: f("dzRaff"), onda: f("dzOnda"), mare: f("dzMare") };
     const v = {
       id: inModifica || (Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
-      data: f("dzData"), porto: f("dzPorto"), partenza: f("dzPart"), rientro: f("dzRient"),
-      equipaggio: f("dzEquip"), miglia: f("dzMiglia"), note: f("dzNote"), cond: cond, liv: livello(cond)
+      data: dataDaTesto(f("dzData")), porto: f("dzPorto"), partenza: f("dzPart"), rientro: f("dzRient"),
+      equipaggio: f("dzEquip"), miglia: f("dzMiglia"), da: f("dzDa"), a: f("dzA"), rotta: rt, note: f("dzNote"), cond: cond, liv: livello(cond)
     };
     const i = voci.findIndex(x => x.id === v.id);
     if (i >= 0) voci[i] = v; else voci.push(v);
@@ -213,8 +243,10 @@
     const orario = (v.partenza || v.rientro) ? (v.partenza || "?") + "–" + (v.rientro || "?") : "";
     const riga1 = [v.porto, orario, (v.miglia !== "" && v.miglia != null) ? vir(v.miglia) + " miglia" : ""].filter(Boolean).join(" · ");
     const cond = condTxt(c);
+    const tratta = [(v.da || v.a) ? (v.da || "?") + " → " + (v.a || "?") : "", (v.rotta !== "" && v.rotta != null) ? "rotta " + String(v.rotta).padStart(3, "0") + "°" : ""].filter(Boolean).join(" · ");
     return '<div class="dz-voce"><div class="dz-riga"><b>' + esc(dataIt(v.data)) + "</b>" + pill + "</div>" +
       '<div class="sub">' + esc(riga1) + "</div>" +
+      (tratta ? '<div class="sub">' + esc(tratta) + "</div>" : "") +
       (cond ? '<div class="sub">' + esc(cond) + "</div>" : "") +
       (v.equipaggio ? '<div class="sub">Equipaggio: ' + esc(v.equipaggio) + "</div>" : "") +
       (v.note ? '<div class="dz-note">' + esc(v.note) + "</div>" : "") +
@@ -246,11 +278,11 @@
   }
   function esportaCsv() {
     const q = x => '"' + String(x == null ? "" : x).replace(/"/g, '""') + '"';
-    const righe = [["data", "porto", "partenza", "rientro", "miglia", "equipaggio", "vento_nodi", "direzione_gradi", "raffica_nodi", "onda_m", "mare_C", "semaforo", "note"].join(";")];
+    const righe = [["data", "porto", "partenza", "rientro", "miglia", "equipaggio", "vento_nodi", "direzione_gradi", "raffica_nodi", "onda_m", "mare_C", "semaforo", "da", "a", "rotta_gradi", "note"].join(";")];
     voci.slice().sort((a, b) => (a.data || "").localeCompare(b.data || "")).forEach(v => {
       const c = v.cond || {};
       righe.push([v.data, v.porto, v.partenza, v.rientro, v.miglia, v.equipaggio, c.vento, c.dir, c.raffica, c.onda, c.mare,
-        (v.liv === 0 || v.liv === 1 || v.liv === 2) ? ["verde", "giallo", "rosso"][v.liv] : "", v.note].map(q).join(";"));
+        (v.liv === 0 || v.liv === 1 || v.liv === 2) ? ["verde", "giallo", "rosso"][v.liv] : "", v.da, v.a, v.rotta, v.note].map(q).join(";"));
     });
     scarica("diario-boat-" + oggiIso() + ".csv", "text/csv", "\ufeff" + righe.join("\n"));
   }
@@ -279,6 +311,7 @@
   el("dzAnnulla").addEventListener("click", chiudi);
   el("dzSalva").addEventListener("click", salvaVoce);
   el("dzCarica").addEventListener("click", caricaCondizioni);
+  el("dzData").addEventListener("change", () => { const d = dataDaTesto(el("dzData").value); if (d) el("dzData").value = itDaIso(d); });
   ["dzPart", "dzRient"].forEach(id => el(id).addEventListener("change", () => { el(id).value = norma(el(id).value); }));
   ["dzData", "dzPorto", "dzPart", "dzRient"].forEach(id => el(id).addEventListener("change", ricaricaDopo));
   el("dzExpJ").addEventListener("click", esportaJson);
