@@ -98,6 +98,7 @@
         <button class="pulsante" id="dzImp" type="button">Importa</button>
         <input type="file" id="dzFile" accept=".json,application/json" hidden>
       </div>
+      <p class="sub" id="dzMsg">Diario v17</p>
       <p class="sub" id="dzUltimo"></p>
       <div class="dz-form" id="dzForm" hidden>
         <label class="dz-campo">Data<input type="text" inputmode="numeric" placeholder="05/10/2026" maxlength="10" id="dzData"></label>
@@ -213,7 +214,7 @@
     const f = id => el(id).value.trim();
     ["dzPart", "dzRient"].forEach(id => { el(id).value = norma(el(id).value); });
     if (!dataDaTesto(f("dzData"))) { alert("Scrivi la data, per esempio 5/10/2026."); return; }
-    if ((!f("dzPart") || !f("dzRient")) && !confirm("Senza partenza e rientro le ore non vengono contate. Salvare lo stesso?")) return;
+    if (!f("dzPart") || !f("dzRient")) { el("dzStato").textContent = "Orari mancanti: le ore non verranno contate."; }
     let rt = f("dzRotta");
     if (rt !== "") {
       const n = Number(rt.replace(",", "."));
@@ -228,7 +229,7 @@
     };
     const i = voci.findIndex(x => x.id === v.id);
     if (i >= 0) voci[i] = v; else voci.push(v);
-    if (salva()) { chiudi(); render(); }
+    if (salva()) { chiudi(); render(); el("dzMsg").textContent = "Uscita salvata. Totale su questo dispositivo: " + voci.length + "."; }
   }
 
   function condTxt(c) {
